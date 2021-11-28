@@ -1,41 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { fetchDailydata } from "../../api";
 import { Line, Bar } from "react-chartjs-2";
-import Style from "./Chart.module.css";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  PointElement,
+  LineElement,
+} from "chart.js";
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  PointElement,
+  LineElement
+);
+
 const Chart = () => {
-  const [dailydata, setdailydata] = useState([]);
+  const [DailyData, setDailyData] = useState([]);
 
   useEffect(() => {
     const fetchAPI = async () => {
-      setdailydata(await fetchDailydata());
+      setDailyData(await fetchDailydata());
     };
-    // console.log(dailydata);
+    console.log(DailyData);
+
     fetchAPI();
   }, []);
 
-  const lineChart = dailydata.length ? (
-    <Line
-      data={{
-        label: dailydata.map(({ date }) => date),
-        datasets: [
-          {
-            data: dailydata.map(({ confirmed }) => confirmed),
-            label: "infected",
-            borderColor: "#3333ff",
-            fill: true,
-          },
-          {
-            data: dailydata.map(({ deaths }) => deaths),
-            label: "deaths",
-            borderColor: "red",
-            backgroundColor: "rgba(255,0,0,0.5)",
-            fill: true,
-          },
-        ],
-      }}
-    />
-  ) : null;
-  return <div className={Style.container}>{lineChart}</div>;
+  const data = {
+    labels: DailyData.map(({ date }) => date),
+    datasets: [
+      {
+        data: DailyData.map(({ confirmed }) => confirmed),
+        label: "infected",
+        borderColor: "#3333ff",
+        fill: true,
+        // borderWidth: 4,
+      },
+      {
+        data: DailyData.map(({ deaths }) => deaths),
+        label: "deaths",
+        borderColor: "red",
+        backgroundColor: "rgba(255,0,0,0.5)",
+        fill: true,
+        // borderWidth: 4,
+      },
+    ],
+  };
+
+  return <Line data={data} />;
 };
 
 export default Chart;
